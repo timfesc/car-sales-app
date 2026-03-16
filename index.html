@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +8,9 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://rsms.me/inter/inter.css" rel="stylesheet">
 </head>
-<body class="bg-slate-950 text-slate-50" style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+
+<body class="bg-slate-950 text-slate-50"
+  style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
   <div id="root"></div>
 
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -17,7 +20,8 @@
 
   <script type="text/babel">
     const { useState } = React;
-    const { Send, Car, CheckCircle } = lucide;
+    const { Send, Car, CheckCircle } = window.lucide;
+
 
     function CarSalesWebsite() {
       const [formData, setFormData] = useState({
@@ -165,7 +169,7 @@
 
           setLoading(false);
           setSubmitted(true);
-          
+
           setTimeout(() => {
             setFormData({
               brand: '',
@@ -214,13 +218,13 @@
           <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
             <section className="mb-12 sm:mb-16">
               <h2 className="text-xl sm:text-2xl font-semibold text-slate-100 mb-6 sm:mb-8">Заявка на автомобиль</h2>
-              
+
               {error && (
                 <div className="mb-6 p-4 bg-red-900/20 border border-red-800 rounded-lg text-red-400 text-sm">
                   {error}
                 </div>
               )}
-              
+
               <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                   <div>
@@ -288,7 +292,7 @@
 
             <section className="border-t border-slate-800 pt-12 sm:pt-16">
               <h2 className="text-xl sm:text-2xl font-semibold text-slate-100 mb-6 sm:mb-8">О нас</h2>
-              
+
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8 mb-8">
                 <div>
                   <div className="text-2xl sm:text-3xl font-semibold text-slate-100 mb-2">85+</div>
@@ -333,4 +337,5 @@
     ReactDOM.createRoot(document.getElementById('root')).render(<CarSalesWebsite />);
   </script>
 </body>
+
 </html>
