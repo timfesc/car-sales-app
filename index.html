@@ -1,33 +1,26 @@
 <!DOCTYPE html>
 <html lang="ru">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Импорт автомобилей</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://rsms.me/inter/inter.css" rel="stylesheet">
 </head>
-
-<body class="bg-slate-950 text-slate-50"
-  style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
-  <div id="root"></div>
+<body>
+  <div id="app"></div>
 
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <script src="https://unpkg.com/lucide@latest"></script>
 
   <script type="text/babel">
     const { useState } = React;
-    const { Send, Car, CheckCircle } = window.lucide;
 
-
-    function CarSalesWebsite() {
+    function App() {
       const [formData, setFormData] = useState({
         brand: '',
         model: '',
-        year: new Date().getFullYear(),
+        year: 2026,
         color: '',
         customerName: '',
         customerPhone: ''
@@ -131,10 +124,9 @@
       };
 
       const colors = ['Белый', 'Чёрный', 'Серебристый', 'Серый', 'Красный', 'Синий', 'Зелёный', 'Золотой', 'Бежевый', 'Коричневый', 'Оранжевый', 'Жёлтый'];
-      const currentYear = new Date().getFullYear();
-      const years = Array.from({ length: 30 }, (_, i) => currentYear - i);
+      const years = Array.from({ length: 30 }, (_, i) => 2026 - i);
 
-      const handleInputChange = (e) => {
+      const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
       };
@@ -147,9 +139,7 @@
         try {
           const response = await fetch('/api/send-email', {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               customerName: formData.customerName,
               customerPhone: formData.customerPhone,
@@ -161,46 +151,27 @@
             })
           });
 
-          const data = await response.json();
-
-          if (!response.ok) {
-            throw new Error(data.message || 'Ошибка отправки');
-          }
-
-          setLoading(false);
+          if (!response.ok) throw new Error('Failed');
+          
           setSubmitted(true);
-
           setTimeout(() => {
-            setFormData({
-              brand: '',
-              model: '',
-              year: currentYear,
-              color: '',
-              customerName: '',
-              customerPhone: ''
-            });
+            setFormData({ brand: '', model: '', year: 2026, color: '', customerName: '', customerPhone: '' });
             setSubmitted(false);
           }, 3000);
         } catch (err) {
-          console.error('Error:', err);
-          setError('Ошибка при отправке заявки. Попробуйте еще раз.');
-          setLoading(false);
+          setError('Ошибка при отправке. Попробуйте еще раз.');
         }
+        setLoading(false);
       };
 
       if (submitted) {
         return (
           <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4">
             <div className="text-center">
-              <div className="mb-6 flex justify-center">
-                <CheckCircle className="w-12 sm:w-16 h-12 sm:h-16 text-slate-100" strokeWidth={1.5} />
-              </div>
-              <h1 className="text-2xl sm:text-3xl font-semibold text-slate-100 mb-2">Заявка отправлена</h1>
-              <p className="text-slate-400 text-sm sm:text-base mb-2">Мы получили вашу заявку:</p>
-              <p className="text-slate-200 font-medium text-base sm:text-lg mb-6">
-                {formData.year} {formData.brand} {formData.model}
-              </p>
-              <p className="text-slate-500 text-xs sm:text-sm">Мы свяжемся с вами по номеру {formData.customerPhone}</p>
+              <h1 className="text-3xl font-semibold text-slate-100 mb-2">✓ Заявка отправлена</h1>
+              <p className="text-slate-400 mb-2">Мы получили вашу заявку:</p>
+              <p className="text-slate-200 font-medium text-lg mb-6">{formData.year} {formData.brand} {formData.model}</p>
+              <p className="text-slate-500">Мы свяжемся с вами по номеру {formData.customerPhone}</p>
             </div>
           </div>
         );
@@ -209,133 +180,71 @@
       return (
         <div className="min-h-screen bg-slate-950 text-slate-50">
           <header className="border-b border-slate-800 sticky top-0 bg-slate-950 z-50">
-            <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4 sm:py-5 flex items-center gap-3">
-              <Car className="w-5 sm:w-6 h-5 sm:h-6 text-slate-100" />
-              <h1 className="text-lg sm:text-xl font-semibold text-slate-100">Импорт автомобилей</h1>
+            <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4 flex items-center gap-3">
+              <h1 className="text-lg sm:text-xl font-semibold text-slate-100">🚗 Импорт автомобилей</h1>
             </div>
           </header>
 
           <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
-            <section className="mb-12 sm:mb-16">
-              <h2 className="text-xl sm:text-2xl font-semibold text-slate-100 mb-6 sm:mb-8">Заявка на автомобиль</h2>
-
-              {error && (
-                <div className="mb-6 p-4 bg-red-900/20 border border-red-800 rounded-lg text-red-400 text-sm">
-                  {error}
-                </div>
-              )}
-
-              <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+            <section className="mb-12">
+              <h2 className="text-2xl font-semibold text-slate-100 mb-6">Заявка на автомобиль</h2>
+              
+              {error && <div className="mb-6 p-4 bg-red-900/20 border border-red-800 rounded-lg text-red-400 text-sm">{error}</div>}
+              
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-xs sm:text-sm font-medium text-slate-400 mb-2">Марка</label>
-                    <select name="brand" value={formData.brand} onChange={handleInputChange} required className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-slate-900 border border-slate-700 rounded-lg text-slate-100 focus:outline-none focus:border-slate-600 focus:ring-1 focus:ring-slate-600 transition text-sm sm:text-base">
+                    <label className="block text-sm font-medium text-slate-400 mb-2">Марка</label>
+                    <select name="brand" value={formData.brand} onChange={handleChange} required className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-lg text-slate-100 focus:outline-none focus:border-slate-600">
                       <option value="">Выберите марку...</option>
-                      {brands.map(brand => <option key={brand} value={brand}>{brand}</option>)}
+                      {brands.map(b => <option key={b} value={b}>{b}</option>)}
                     </select>
                   </div>
 
                   <div>
-                    <label className="block text-xs sm:text-sm font-medium text-slate-400 mb-2">Модель</label>
-                    <select name="model" value={formData.model} onChange={handleInputChange} required disabled={!formData.brand} className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-slate-900 border border-slate-700 rounded-lg text-slate-100 focus:outline-none focus:border-slate-600 focus:ring-1 focus:ring-slate-600 transition disabled:bg-slate-800 disabled:cursor-not-allowed text-sm sm:text-base">
+                    <label className="block text-sm font-medium text-slate-400 mb-2">Модель</label>
+                    <select name="model" value={formData.model} onChange={handleChange} required disabled={!formData.brand} className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-lg text-slate-100 focus:outline-none focus:border-slate-600 disabled:bg-slate-800">
                       <option value="">{formData.brand ? 'Выберите модель...' : 'Сначала выберите марку...'}</option>
-                      {formData.brand && modelsByBrand[formData.brand]?.map(model => <option key={model} value={model}>{model}</option>)}
+                      {formData.brand && modelsByBrand[formData.brand]?.map(m => <option key={m} value={m}>{m}</option>)}
                     </select>
                   </div>
 
                   <div>
-                    <label className="block text-xs sm:text-sm font-medium text-slate-400 mb-2">Год</label>
-                    <select name="year" value={formData.year} onChange={handleInputChange} required className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-slate-900 border border-slate-700 rounded-lg text-slate-100 focus:outline-none focus:border-slate-600 focus:ring-1 focus:ring-slate-600 transition text-sm sm:text-base">
-                      {years.map(year => <option key={year} value={year}>{year}</option>)}
+                    <label className="block text-sm font-medium text-slate-400 mb-2">Год</label>
+                    <select name="year" value={formData.year} onChange={handleChange} required className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-lg text-slate-100">
+                      {years.map(y => <option key={y} value={y}>{y}</option>)}
                     </select>
                   </div>
 
                   <div>
-                    <label className="block text-xs sm:text-sm font-medium text-slate-400 mb-2">Цвет</label>
-                    <select name="color" value={formData.color} onChange={handleInputChange} required className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-slate-900 border border-slate-700 rounded-lg text-slate-100 focus:outline-none focus:border-slate-600 focus:ring-1 focus:ring-slate-600 transition text-sm sm:text-base">
+                    <label className="block text-sm font-medium text-slate-400 mb-2">Цвет</label>
+                    <select name="color" value={formData.color} onChange={handleChange} required className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-lg text-slate-100">
                       <option value="">Выберите цвет...</option>
-                      {colors.map(color => <option key={color} value={color}>{color}</option>)}
+                      {colors.map(c => <option key={c} value={c}>{c}</option>)}
                     </select>
                   </div>
                 </div>
 
                 <div className="border-t border-slate-800 pt-6">
-                  <h3 className="text-xs sm:text-sm font-semibold text-slate-300 mb-4 sm:mb-6">Ваши контактные данные</h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                    <div>
-                      <label className="block text-xs sm:text-sm font-medium text-slate-400 mb-2">Имя</label>
-                      <input type="text" name="customerName" value={formData.customerName} onChange={handleInputChange} required placeholder="Иван Иванов" className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-slate-900 border border-slate-700 rounded-lg text-slate-100 placeholder-slate-600 focus:outline-none focus:border-slate-600 focus:ring-1 focus:ring-slate-600 transition text-sm sm:text-base" />
-                    </div>
-
-                    <div>
-                      <label className="block text-xs sm:text-sm font-medium text-slate-400 mb-2">Телефон</label>
-                      <input type="tel" name="customerPhone" value={formData.customerPhone} onChange={handleInputChange} required placeholder="+7 (999) 123-45-67" className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-slate-900 border border-slate-700 rounded-lg text-slate-100 placeholder-slate-600 focus:outline-none focus:border-slate-600 focus:ring-1 focus:ring-slate-600 transition text-sm sm:text-base" />
-                    </div>
+                  <h3 className="text-sm font-semibold text-slate-300 mb-6">Ваши контактные данные</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <input type="text" name="customerName" value={formData.customerName} onChange={handleChange} required placeholder="Имя" className="px-4 py-3 bg-slate-900 border border-slate-700 rounded-lg text-slate-100 placeholder-slate-600 focus:outline-none focus:border-slate-600" />
+                    <input type="tel" name="customerPhone" value={formData.customerPhone} onChange={handleChange} required placeholder="Телефон" className="px-4 py-3 bg-slate-900 border border-slate-700 rounded-lg text-slate-100 placeholder-slate-600 focus:outline-none focus:border-slate-600" />
                   </div>
                 </div>
 
-                <button type="submit" disabled={loading} className="w-full mt-6 sm:mt-8 px-6 sm:px-8 py-3 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 font-medium text-sm sm:text-base">
-                  {loading ? (
-                    <>
-                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                      Отправка...
-                    </>
-                  ) : (
-                    <>
-                      <Send className="w-4 h-4" />
-                      Отправить заявку
-                    </>
-                  )}
+                <button type="submit" disabled={loading} className="w-full mt-8 px-8 py-3 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 disabled:opacity-50 font-medium">
+                  {loading ? 'Отправка...' : '✓ Отправить заявку'}
                 </button>
               </form>
             </section>
-
-            <section className="border-t border-slate-800 pt-12 sm:pt-16">
-              <h2 className="text-xl sm:text-2xl font-semibold text-slate-100 mb-6 sm:mb-8">О нас</h2>
-
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8 mb-8">
-                <div>
-                  <div className="text-2xl sm:text-3xl font-semibold text-slate-100 mb-2">85+</div>
-                  <p className="text-slate-400 text-xs sm:text-sm">Марок автомобилей доступных</p>
-                </div>
-                <div>
-                  <div className="text-2xl sm:text-3xl font-semibold text-slate-100 mb-2">1000+</div>
-                  <p className="text-slate-400 text-xs sm:text-sm">Моделей на выбор</p>
-                </div>
-                <div>
-                  <div className="text-2xl sm:text-3xl font-semibold text-slate-100 mb-2">24/7</div>
-                  <p className="text-slate-400 text-xs sm:text-sm">Поддержка клиентов</p>
-                </div>
-              </div>
-
-              <div className="space-y-3 sm:space-y-4">
-                <div className="flex items-start gap-3 sm:gap-4">
-                  <span className="text-slate-600 text-sm mt-0.5 flex-shrink-0">•</span>
-                  <p className="text-slate-400 text-xs sm:text-sm">Международная гарантия включена</p>
-                </div>
-                <div className="flex items-start gap-3 sm:gap-4">
-                  <span className="text-slate-600 text-sm mt-0.5 flex-shrink-0">•</span>
-                  <p className="text-slate-400 text-xs sm:text-sm">Профессиональная проверка и сертификация</p>
-                </div>
-                <div className="flex items-start gap-3 sm:gap-4">
-                  <span className="text-slate-600 text-sm mt-0.5 flex-shrink-0">•</span>
-                  <p className="text-slate-400 text-xs sm:text-sm">Гибкие варианты финансирования</p>
-                </div>
-              </div>
-            </section>
           </main>
-
-          <footer className="border-t border-slate-800 mt-12 sm:mt-16 py-6 bg-slate-950">
-            <div className="max-w-5xl mx-auto px-4 sm:px-6 text-center text-slate-600 text-xs sm:text-sm">
-              <p>© 2025 Импорт автомобилей. Все права защищены. | Дилер премиум автомобилей</p>
-            </div>
-          </footer>
         </div>
       );
     }
 
-    ReactDOM.createRoot(document.getElementById('root')).render(<CarSalesWebsite />);
+    const root = ReactDOM.createRoot(document.getElementById('app'));
+    root.render(<App />);
   </script>
 </body>
-
 </html>
