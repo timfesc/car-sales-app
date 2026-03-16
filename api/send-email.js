@@ -1,6 +1,35 @@
-// api/send-email.js
-// This goes in your project's api folder
+# 🚀 SIMPLE FIX - Just 2 Files!
 
+## The problem:
+Your structure was too complicated. Let's simplify it!
+
+---
+
+## ✅ DELETE EVERYTHING AND START FRESH:
+
+### Step 1: Delete old files in GitHub
+1. Go to your GitHub repo
+2. Delete these files (you don't need them):
+   - ❌ `pages/index.jsx`
+   - ❌ `package.json`
+   - ❌ `vercel.json`
+   - ❌ `api/send-email.js`
+
+### Step 2: Create NEW files
+
+#### FILE 1: `index.html` (in root folder)
+1. Click **"Add file"** → **"Create new file"**
+2. Name: `index.html`
+3. Copy code from: `index-simple.html` (the file I created)
+4. Paste everything
+5. **"Commit changes"**
+
+#### FILE 2: `api/send-email.js` (backend function)
+1. Click **"Add file"** → **"Create new file"**
+2. Name: `api/send-email.js`
+3. Paste this code:
+
+```javascript
 import { Resend } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -20,13 +49,16 @@ export default async function handler(req, res) {
     submissionTime
   } = req.body;
 
-  // Validate required fields
   if (!customerName || !customerPhone || !carBrand || !carModel) {
     return res.status(400).json({ message: 'Missing required fields' });
   }
 
   try {
-    const emailContent = `
+    const data = await resend.emails.send({
+      from: 'Импорт Авто <onboarding@resend.dev>',
+      to: 'timfesc@gmail.com',
+      subject: `Новая заявка: ${carYear} ${carBrand} ${carModel}`,
+      text: `
 Новая заявка на покупку автомобиля
 
 Информация о покупателе:
@@ -40,16 +72,8 @@ export default async function handler(req, res) {
 - Цвет: ${carColor}
 
 Время отправки: ${submissionTime}
-    `;
-
-    const data = await resend.emails.send({
-      from: 'Импорт Авто <onboarding@resend.dev>',
-      to: 'timfesc@gmail.com',
-      subject: `Новая заявка: ${carYear} ${carBrand} ${carModel}`,
-      text: emailContent,
+      `,
     });
-
-    console.log('Email sent:', data);
 
     return res.status(200).json({
       success: true,
@@ -58,8 +82,7 @@ export default async function handler(req, res) {
     });
 
   } catch (error) {
-    console.error('Error sending email:', error);
-
+    console.error('Error:', error);
     return res.status(500).json({
       success: false,
       message: 'Failed to send email',
@@ -67,3 +90,41 @@ export default async function handler(req, res) {
     });
   }
 }
+```
+
+4. **"Commit changes"**
+
+---
+
+## ✅ YOUR FINAL GITHUB STRUCTURE:
+
+```
+car-sales-app/
+├── index.html           ← Main website
+├── api/
+│   └── send-email.js   ← Email function
+└── README.md           ← (optional)
+```
+
+That's it! Only 2 files! 🎉
+
+---
+
+## ⏳ THEN WAIT FOR VERCEL TO DEPLOY:
+
+1. Go to Vercel
+2. Wait 2-3 minutes
+3. You should see green checkmark ✅
+
+---
+
+## ✅ TEST IT:
+
+1. Open your Vercel URL
+2. Fill form
+3. Submit
+4. Check email! 📧
+
+---
+
+**Do this now!** 🚀
